@@ -1,11 +1,11 @@
 package com.study.batch.batch.domain.order;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -13,6 +13,7 @@ import java.util.Date;
 @Getter
 @ToString
 @Entity
+@Table(name = "order")
 public class Order {
 
     @Id

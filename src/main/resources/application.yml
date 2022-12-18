@@ -19,6 +19,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/project?serverTimezone=Asia/Seoul
     username: root
     password: tntor123
+
   jpa:
     show-sql: true
 
