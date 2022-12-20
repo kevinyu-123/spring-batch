@@ -1,5 +1,6 @@
 package com.study.batch.batch.job;
 
+import com.study.batch.batch.domain.account.Account;
 import com.study.batch.batch.domain.account.AccountRepository;
 import com.study.batch.batch.domain.order.Order;
 import com.study.batch.batch.domain.order.OrderRepository;
@@ -11,8 +12,8 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -53,16 +53,31 @@ public class DataMigrationConfig {
     public Step migrationStep(ItemReader trOrderReader){
         return stepBuilderFactory.get("migrationStep")
                 //db에서 읽어오는데이터 타입, writer 할 데이터 타입
-                .<Order,Order>chunk(5) // chunk: 5개의 데이터 단위로 처리(transaction의 개수), 읽어오는 데이터 타입 : order, write 할 데이터 타입 : order
+                .<Order, Account>chunk(5) // chunk: 5개의 데이터 단위로 처리(transaction의 개수), 읽어오는 데이터 타입 : order, write 할 데이터 타입 : order
                 .reader(trOrderReader)
-                .writer(new ItemWriter() {
-                    @Override
-                    public void write(List items) throws Exception {
-                        items.forEach(System.out::println);
-                    }
-                })
+//                .writer(new ItemWriter() {
+//                    @Override
+//                    public void write(List items) throws Exception {
+//                        items.forEach(System.out::println);
+//                    }
+//                })
+                .processor(orderProcessor())
+                .writer()
                 .build();
     }
+
+    @Bean
+    @StepScope
+    public ItemProcessor<Order,Account> orderProcessor(){
+        return new ItemProcessor<Order, Account>() {
+            @Override
+            public Account process(Order item) throws Exception {
+                return new Account(item);
+            }
+        };
+    }
+
+
 
     @Bean
     @StepScope
